@@ -1,0 +1,11 @@
+services:
+  apache:
+    build: ./apache24
+    ports:
+      - '8081:80'
+    networks:
+      - 'cpp-network'
+
+networks:
+  cpp-network:
+    driver: bridge
