@@ -68,5 +68,4 @@ PUT /users/{id}
 ```
 DELETE /users/{id}
 204 No Content
-404 Not Found
 ```

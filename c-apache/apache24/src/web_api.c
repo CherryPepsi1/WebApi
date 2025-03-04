@@ -202,8 +202,6 @@ static int users_handler(request_rec *r)
         int err = dal_delete_user(user);
         if (err)
             return HTTP_INTERNAL_SERVER_ERROR;
-        if (user->id == INVALID_USER_ID)
-            return HTTP_NOT_FOUND;
 
         code = HTTP_NO_CONTENT;
 
