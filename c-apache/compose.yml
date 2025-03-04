@@ -4,8 +4,8 @@ services:
     ports:
       - '8081:80'
     networks:
-      - 'cpp-network'
+      - 'c-network'
 
 networks:
-  cpp-network:
+  c-network:
     driver: bridge
