@@ -1,6 +1,6 @@
 services:
   apache:
-    build: ./apache24
+    build: ./apache
     ports:
       - '8081:80'
     networks:
