@@ -8,7 +8,7 @@ RUN apt-get install -y apache2-dev libsqlite3-dev libcjson-dev
 WORKDIR /usr/app
 
 # Copy files
-COPY /src/. /usr/app
+COPY src/. /usr/app
 COPY httpd.conf /usr/local/apache2/conf/httpd.conf
 
 # Set permissions
