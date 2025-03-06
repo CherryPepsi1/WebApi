@@ -6,7 +6,12 @@
 #include <limits.h>
 #include "dal.h"
 
-const char *table_users = "users";
+const char *TABLE_USERS = "users";
+const char *COLUMN_ID = "id";
+const char *COLUMN_NAME = "name";
+const char *COLUMN_AGE = "age";
+const int INVALID_USER_ID = 0;
+
 static sqlite3 *db;
 
 int dal_init()
@@ -66,7 +71,13 @@ int dal_get_users(struct User **users, int count)
     init_users(users, count);
 
     char sql[BUFFER_SIZE];
-    sprintf(sql, "SELECT id, name, age FROM %s LIMIT %i", table_users, count);
+    sprintf(sql,
+        "SELECT %s, %s, %s FROM %s LIMIT %i",
+        COLUMN_ID,
+        COLUMN_NAME,
+        COLUMN_AGE,
+        TABLE_USERS,
+        count);
     char *errmsg;
     int err = sqlite3_exec(db, sql, users_callback, (void*)users, &errmsg);
     if (err) {
@@ -85,7 +96,14 @@ int dal_get_user(struct User *user)
     user->id = INVALID_USER_ID;
 
     char sql[BUFFER_SIZE];
-    sprintf(sql, "SELECT id, name, age FROM %s where id = %i", table_users, id);
+    sprintf(sql,
+        "SELECT %s, %s, %s FROM %s where %s = %i",
+        COLUMN_ID,
+        COLUMN_NAME,
+        COLUMN_AGE,
+        TABLE_USERS,
+        COLUMN_ID,
+        id);
     char *errmsg;
     int err = sqlite3_exec(db, sql, user_callback, (void*)user, &errmsg);
     if (err) {
@@ -101,7 +119,13 @@ int dal_insert_user(struct User *user)
     if (db == NULL) return 1;
 
     char sql[BUFFER_SIZE];
-    sprintf(sql, "INSERT INTO %s (name, age) VALUES ('%s', %i)", table_users, user->name, user->age);
+    sprintf(sql,
+        "INSERT INTO %s (%s, %s) VALUES ('%s', %i)",
+        TABLE_USERS,
+        COLUMN_NAME,
+        COLUMN_AGE,
+        user->name,
+        user->age);
     char *errmsg;
     int err = sqlite3_exec(db, sql, NULL, (void*)user, &errmsg);
     if (err) {
@@ -124,7 +148,15 @@ int dal_update_user(struct User *user)
     if (db == NULL) return 1;
 
     char sql[BUFFER_SIZE];
-    sprintf(sql, "UPDATE %s SET name = '%s', age = %i WHERE id = %i", table_users, user->name, user->age, user->id);
+    sprintf(sql,
+        "UPDATE %s SET %s = '%s', %s = %i WHERE %s = %i",
+        TABLE_USERS,
+        COLUMN_NAME,
+        user->name,
+        COLUMN_AGE,
+        user->age,
+        COLUMN_ID,
+        user->id);
     char *errmsg;
     int err = sqlite3_exec(db, sql, NULL, (void*)user, &errmsg);
     if (err) {
@@ -144,7 +176,11 @@ int dal_delete_user(struct User *user)
     if (db == NULL) return 1;
 
     char sql[BUFFER_SIZE];
-    sprintf(sql, "DELETE FROM %s where id = %i", table_users, user->id);
+    sprintf(sql,
+        "DELETE FROM %s where %s = %i",
+        TABLE_USERS,
+        COLUMN_ID,
+        user->id);
     char *errmsg;
     int err = sqlite3_exec(db, sql, user_callback, (void*)user, &errmsg);
     if (err) {

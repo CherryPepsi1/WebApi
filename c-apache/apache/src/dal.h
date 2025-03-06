@@ -2,7 +2,8 @@
 
 #define BUFFER_SIZE 256
 #define NAME_SIZE 128
-#define INVALID_USER_ID 0
+
+extern const int INVALID_USER_ID;
 
 struct User {
     int id;
