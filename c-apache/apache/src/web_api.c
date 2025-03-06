@@ -5,7 +5,7 @@
 #include <cjson/cJSON.h>
 #include "dal.h"
 
-const int MAX_USERS = 5;
+const int MAX_USERS = 10;
 
 static int read_body(request_rec *r, const char **rbuf, apr_off_t *size)
 {
