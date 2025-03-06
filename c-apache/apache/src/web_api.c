@@ -56,7 +56,8 @@ static int ping_handler(request_rec *r)
 static int users_handler(request_rec *r)
 {
     char *uri = r->uri;
-    char *path = strtok(uri, "/");
+    char *api = strtok(uri, "/");
+    char *path = strtok(NULL, "/");
     char *param = strtok(NULL, "/");
     char *response = "";
     int code = HTTP_NOT_IMPLEMENTED;
