@@ -4,5 +4,3 @@ CREATE TABLE users (
     age INT NOT NULL,
     PRIMARY KEY (id)
 );
-
-INSERT INTO users (name, age) VALUES ('Dylan', 28);
