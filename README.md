@@ -1,11 +1,18 @@
 # WebApi
-Basic REST APIs using different frameworks and technologies.
+Basic REST APIs using different frameworks and technologies.<br>
+Built on **Ubuntu 24.04**.
 
 ### Docker Build
 `docker compose build`
 
 ### Docker Run
 `docker compose up`
+
+### Database Schemas
+#### `users`
+| `id`    | `name`       | `age`   |
+| ------- | ------------ | ------- |
+| int     | varchar(128) | int     |
 
 ### REST APIs
 ```
@@ -47,6 +54,7 @@ POST /users
     "name": string,
     "age": number
 }
+400 Bad Request
 ```
 ```
 PUT /users/{id}
@@ -60,6 +68,7 @@ PUT /users/{id}
     "name": string,
     "age": number
 }
+400 Bad Request
 404 Not Found
 ```
 ```

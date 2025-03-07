@@ -1,0 +1,9 @@
+# Apache
+c-apache/apache/src/.libs/
+c-apache/apache/src/*.o
+c-apache/apache/src/*.lo
+c-apache/apache/src/*.la
+c-apache/apache/src/*.slo
+
+# Spring Boot
+java-spring/spring*/target/
