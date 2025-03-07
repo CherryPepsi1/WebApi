@@ -8,7 +8,8 @@ RUN apt-get install -y apache2-dev libsqlite3-dev libcjson-dev
 WORKDIR /usr/app
 
 # Copy files
-COPY src/. /usr/app
+COPY db/. /usr/app
+COPY src/.libs/mod_web_api.so /usr/local/apache2/modules/mod_web_api.so
 COPY httpd.conf /usr/local/apache2/conf/httpd.conf
 
 # Set permissions
@@ -17,4 +18,4 @@ RUN chmod 777 /usr/app
 RUN chmod 777 /usr/app/web_api.db
 
 # Configure and compile the module
-RUN apxs -n mod_web_api -i -c -o mod_web_api.so -l sqlite3 -l cjson web_api.c dal.c
+RUN apachectl restart
