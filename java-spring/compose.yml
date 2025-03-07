@@ -1,0 +1,23 @@
+services:
+  mariadb:
+    build: ./mariadb
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: de4ac6d26c0542c98ce978f7eb3b8aa7
+      MARIADB_DATABASE: webapi
+    ports:
+      - '3306:3306'
+    networks:
+      - 'java-network'
+  openjre:
+    build: ./spring
+    ports:
+      - '8082:8080'
+    depends_on:
+      - mariadb
+    networks:
+      - 'java-network'
+
+networks:
+  java-network:
+    driver: bridge

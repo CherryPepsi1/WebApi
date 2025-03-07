@@ -11,7 +11,7 @@ Built on **Ubuntu 24.04**.
 ### Database Schemas
 #### `users`
 | `id`    | `name`       | `age`   |
-| ------- | ------------ | ------- |
+| :------ | :----------- | :------ |
 | int     | varchar(128) | int     |
 
 ### REST APIs

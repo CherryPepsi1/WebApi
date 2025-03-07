@@ -6,4 +6,4 @@ c-apache/apache/src/*.la
 c-apache/apache/src/*.slo
 
 # Spring Boot
-java-spring/spring*/target/
+java-spring/spring/target/
