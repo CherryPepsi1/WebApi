@@ -1,12 +1,6 @@
 # WebApi
 Basic REST APIs using different frameworks and technologies.
 
-### Frameworks + Technologies
-> - C
->     - [cJSON](https://github.com/DaveGamble/cJSON)
-> - Apache 2.4
-> - SQLite3
-
 ### Docker Build
 `docker compose build`
 
