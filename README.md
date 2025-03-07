@@ -7,8 +7,11 @@ Basic REST APIs using different frameworks and technologies.
 > - Apache 2.4
 > - SQLite3
 
-### Building + Running
-`docker compose up -d --build`
+### Docker Build
+`docker compose build`
+
+### Docker Run
+`docker compose up`
 
 ### REST APIs
 ```
