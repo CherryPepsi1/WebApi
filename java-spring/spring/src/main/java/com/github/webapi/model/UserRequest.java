@@ -8,7 +8,7 @@ import jakarta.validation.constraints.*;
  */
 public class UserRequest {
 
-    @NotNull(message = "Age cannot be null")
+    @NotNull(message = "Name cannot be null")
     private String name;
 
     @NotNull(message = "Age cannot be null")
