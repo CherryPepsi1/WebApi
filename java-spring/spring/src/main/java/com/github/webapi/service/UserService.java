@@ -3,12 +3,13 @@ package com.github.webapi.service;
 import com.github.webapi.entity.User;
 import com.github.webapi.exception.UserNotFoundException;
 import com.github.webapi.repository.UserRepository;
+import com.github.webapi.service.DataCallbackInterface;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.lang.System;
-import java.sql.*;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,49 +20,21 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    private static final int TIMEOUT_SECS = 60;
+    private static final int MAX_USERS = 10;
 
     private final UserRepository userRepository;
-    private Connection connection;
+    private final DataService dataService;
 
-    @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-        try {
-            this.connection = DriverManager.getConnection(
-                System.getenv("DATABASE_URL"),
-                System.getenv("DATABASE_USERNAME"),
-                System.getenv("DATABASE_PASSWORD")
-            );
-        } catch (SQLException e) {
-            System.out.println("Failed to open database connection: " + e.getMessage());
-            this.connection = null;
+    @Component
+    public class DataCallback implements DataCallbackInterface {
+
+        @Autowired
+        public DataCallback() {
         }
-    }
 
-    public List<User> getUsers(int offset, int count) {
-        try {
-            if (connection == null) {
-                System.out.println("Database connection is null");
-            } else if (!connection.isValid(TIMEOUT_SECS)) {
-                System.out.println("Database connection is not valid");
-            } else {
-                String sql = String.format("""
-                    SELECT %s, %s, %s
-                    FROM %s
-                    OFFSET %d ROWS
-                    FETCH NEXT %d ROWS ONLY""",
-                    UserRepository.COLUMN_ID,
-                    UserRepository.COLUMN_NAME,
-                    UserRepository.COLUMN_AGE,
-                    UserRepository.TABLE_USERS,
-                    offset,
-                    count
-                );
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql);
-
-                List<User> users = new ArrayList<User>();
+        public List<User> parseResultSet(ResultSet resultSet) {
+            List<User> users = new ArrayList<User>();
+            try {
                 while (resultSet.next()) {
                     User user = new User(
                         resultSet.getInt(UserRepository.COLUMN_ID),
@@ -69,18 +42,48 @@ public class UserService {
                         resultSet.getInt(UserRepository.COLUMN_AGE));
                     users.add(user);
                 }
-
-                return users;
+            } catch (Exception e) {
+                System.out.println("Failed to parse result set: " + e.getMessage());
             }
 
-        } catch (SQLException e) {
-            System.out.println("Failed to execute query: " + e.getMessage());
+            return users;
         }
 
-        return null;
     }
 
-    public User getUserById(int id) {
+    @Autowired
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+        this.dataService = new DataService(new DataCallback());
+    }
+
+    public List<User> getUsers(Integer page) throws IllegalArgumentException {
+        if (page != null) {
+            if (page.intValue() <= 0) {
+                throw new IllegalArgumentException("Page cannot be less than 1");
+            }
+
+            int offset = (page.intValue() - 1) * MAX_USERS;
+            return dataService.select(
+                UserRepository.TABLE_USERS,
+                MAX_USERS,
+                offset,
+                UserRepository.COLUMN_ID,
+                UserRepository.COLUMN_NAME,
+                UserRepository.COLUMN_AGE
+            );
+        }
+
+        return dataService.select(
+            UserRepository.TABLE_USERS,
+            MAX_USERS,
+            UserRepository.COLUMN_ID,
+            UserRepository.COLUMN_NAME,
+            UserRepository.COLUMN_AGE
+        );
+    }
+
+    public User getUserById(int id) throws UserNotFoundException {
         Optional<User> existingUser = userRepository.findById(id);
         if (existingUser.isPresent()) {
             return existingUser.get();
@@ -93,7 +96,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User updateUserById(int id, User user) {
+    public User updateUserById(int id, User user) throws UserNotFoundException {
         Optional<User> existingUser = userRepository.findById(id);
         if (existingUser.isPresent()) {
             User updatedUser = existingUser.get();
@@ -106,17 +109,6 @@ public class UserService {
 
     public void deleteUserById(int id) {
         userRepository.deleteById(id);
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        try {
-            this.connection.close();
-        } catch (SQLException e) {
-            System.out.println("Failed to close database connection: " + e.getMessage());
-        } finally {
-            super.finalize();
-        }
     }
 
 }

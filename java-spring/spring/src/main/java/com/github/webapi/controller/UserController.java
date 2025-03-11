@@ -5,6 +5,7 @@ import com.github.webapi.exception.UserNotFoundException;
 import com.github.webapi.model.UserRequest;
 import com.github.webapi.exception.UserNotFoundException;
 import com.github.webapi.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +23,6 @@ import java.util.Optional;
 @RequestMapping("/api")
 public class UserController {
 
-    private static final int MAX_USERS = 10;
-
     private final UserService userService;
 
     @Autowired
@@ -33,21 +32,16 @@ public class UserController {
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> getUsers(@RequestParam(required = false) Integer page) {
-        int offset = 0;
-        if (page != null) {
-            if (page.intValue() <= 0) {
-                return ResponseEntity.badRequest().build();
-            } else {
-                offset = (page - 1) * MAX_USERS;
+        try {
+            List<User> users = userService.getUsers(page);
+            if (users == null) {
+                return ResponseEntity.internalServerError().build();
             }
-        }
+            return ResponseEntity.ok(users);
 
-        List<User> users = userService.getUsers(offset, MAX_USERS);
-        if (users == null) {
-            return ResponseEntity.internalServerError().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
         }
-
-        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/users/{id}")

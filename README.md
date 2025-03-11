@@ -21,7 +21,7 @@ GET /ping
 Healthy
 ```
 ```
-GET /users
+GET /users?page={num}
 200 OK
 [
     {
