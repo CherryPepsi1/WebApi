@@ -71,10 +71,9 @@ public class DataService {
                 if (offset != null) {
                     sqlBuilder.append(" OFFSET " + offset);
                 }
-                String sql = sqlBuilder.toString();
-                System.out.println("SQL: " + sql);
+
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql);
+                ResultSet resultSet = statement.executeQuery(sqlBuilder.toString());
                 return callback.parseResultSet(resultSet);
             }
 
