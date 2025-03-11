@@ -1,6 +1,6 @@
 #pragma once
 
-#define BUFFER_SIZE 256
+#define BUFFER_SIZE 1024
 #define NAME_SIZE 128
 
 extern const int INVALID_USER_ID;
