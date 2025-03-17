@@ -222,9 +222,9 @@ static int web_api_handler(request_rec *r)
         return ping_handler(r);
     } else if (strcmp(r->handler, "users-handler") == 0) {
         return users_handler(r);
-    } else {
-        return DECLINED;
     }
+
+    return DECLINED;
 }
 
 static void register_hooks(apr_pool_t *pool) 

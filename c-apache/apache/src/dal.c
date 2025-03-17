@@ -18,7 +18,19 @@ int dal_init()
 {
     int err = sqlite3_open("/usr/app/web_api.db", &db);
     if (err) {
+        printf("%s: err = %d\n", __func__, err);
         db = NULL;
+        return 1;
+    }
+
+    return 0;
+}
+
+int dal_final()
+{
+    int err = sqlite3_close(db);
+    if (err) {
+        printf("%s: err = %d\n", __func__, err);
         return 1;
     }
 

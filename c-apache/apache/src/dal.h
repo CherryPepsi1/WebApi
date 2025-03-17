@@ -12,6 +12,7 @@ struct User {
 };
 
 int dal_init();
+int dal_final();
 int dal_get_users(struct User **users, int count);
 int dal_get_user(struct User *user);
 int dal_insert_user(struct User *user);
