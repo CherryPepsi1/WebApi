@@ -11,6 +11,10 @@ services:
       - 'java-network'
   openjre:
     build: ./spring
+    environment:
+      DATABASE_URL: jdbc:mariadb://mariadb:3306/webapi
+      DATABASE_USERNAME: root
+      DATABASE_PASSWORD: de4ac6d26c0542c98ce978f7eb3b8aa7
     ports:
       - '8082:8080'
     depends_on:

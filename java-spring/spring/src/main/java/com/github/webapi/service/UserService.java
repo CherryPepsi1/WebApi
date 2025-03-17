@@ -1,6 +1,7 @@
 package com.github.webapi.service;
 
 import com.github.webapi.entity.User;
+import com.github.webapi.exception.NullUsersException;
 import com.github.webapi.exception.UserNotFoundException;
 import com.github.webapi.repository.UserRepository;
 import com.github.webapi.service.DataCallbackInterface;
@@ -57,14 +58,11 @@ public class UserService {
         this.dataService = new DataService(new DataCallback());
     }
 
-    public List<User> getUsers(Integer page) throws IllegalArgumentException {
+    public List<User> getUsers(Integer page) throws NullUsersException {
+        List<User> users = null;
         if (page != null) {
-            if (page.intValue() <= 0) {
-                throw new IllegalArgumentException("Page cannot be less than 1");
-            }
-
             int offset = (page.intValue() - 1) * MAX_USERS;
-            return dataService.select(
+            users = dataService.select(
                 UserRepository.TABLE_USERS,
                 MAX_USERS,
                 offset,
@@ -72,15 +70,21 @@ public class UserService {
                 UserRepository.COLUMN_NAME,
                 UserRepository.COLUMN_AGE
             );
+        } else {
+            users = dataService.select(
+                UserRepository.TABLE_USERS,
+                MAX_USERS,
+                UserRepository.COLUMN_ID,
+                UserRepository.COLUMN_NAME,
+                UserRepository.COLUMN_AGE
+            );
         }
 
-        return dataService.select(
-            UserRepository.TABLE_USERS,
-            MAX_USERS,
-            UserRepository.COLUMN_ID,
-            UserRepository.COLUMN_NAME,
-            UserRepository.COLUMN_AGE
-        );
+        if (users != null) {
+            return users;
+        }
+
+        throw new NullUsersException();
     }
 
     public User getUserById(int id) throws UserNotFoundException {

@@ -56,7 +56,7 @@ public class DataService {
         try {
             if (isValid()) {
                 StringBuilder sqlBuilder = new StringBuilder("SELECT ");
-                if (columns.length == 0) {
+                if (columns == null || columns.length == 0) {
                     sqlBuilder.append("*");
                 } else {
                     for (int i = 0; i < columns.length; i++) {
@@ -78,7 +78,7 @@ public class DataService {
             }
 
         } catch (SQLException e) {
-            System.out.println("Failed to execute query: " + e.getMessage());
+            System.out.println("Failed to execute select query: " + e.getMessage());
         }
 
         return null;
