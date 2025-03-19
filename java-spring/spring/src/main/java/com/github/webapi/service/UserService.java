@@ -1,8 +1,8 @@
 package com.github.webapi.service;
 
 import com.github.webapi.entity.User;
-import com.github.webapi.exception.NullUsersException;
-import com.github.webapi.exception.UserNotFoundException;
+import com.github.webapi.exception.DataException;
+import com.github.webapi.exception.NotFoundException;
 import com.github.webapi.repository.UserRepository;
 import com.github.webapi.service.DataCallbackInterface;
 
@@ -44,7 +44,7 @@ public class UserService {
                     users.add(user);
                 }
             } catch (Exception e) {
-                System.out.println("Failed to parse result set: " + e.getMessage());
+                System.err.println("Failed to parse result set: " + e.getMessage());
             }
 
             return users;
@@ -58,57 +58,46 @@ public class UserService {
         this.dataService = new DataService(new DataCallback());
     }
 
-    public List<User> getUsers(Integer page) throws NullUsersException {
-        List<User> users = null;
+    public List<User> getUsers(Integer page) throws DataException {
         if (page != null) {
             int offset = (page.intValue() - 1) * MAX_USERS;
-            users = dataService.select(
+            return dataService.select(
                 UserRepository.TABLE_USERS,
                 MAX_USERS,
                 offset,
-                UserRepository.COLUMN_ID,
-                UserRepository.COLUMN_NAME,
-                UserRepository.COLUMN_AGE
+                UserRepository.COLUMNS_USERS
             );
         } else {
-            users = dataService.select(
+            return dataService.select(
                 UserRepository.TABLE_USERS,
                 MAX_USERS,
-                UserRepository.COLUMN_ID,
-                UserRepository.COLUMN_NAME,
-                UserRepository.COLUMN_AGE
+                UserRepository.COLUMNS_USERS
             );
         }
-
-        if (users != null) {
-            return users;
-        }
-
-        throw new NullUsersException();
     }
 
-    public User getUserById(int id) throws UserNotFoundException {
+    public User getUserById(int id) throws NotFoundException {
         Optional<User> existingUser = userRepository.findById(id);
         if (existingUser.isPresent()) {
             return existingUser.get();
+        } else {
+            throw new NotFoundException();
         }
-        
-        throw new UserNotFoundException();
     }
 
     public User createUser(User user) {
         return userRepository.save(user);
     }
 
-    public User updateUserById(int id, User user) throws UserNotFoundException {
+    public User updateUserById(int id, User user) throws NotFoundException {
         Optional<User> existingUser = userRepository.findById(id);
         if (existingUser.isPresent()) {
             User updatedUser = existingUser.get();
             updatedUser.copyFrom(user);
             return userRepository.save(updatedUser);
+        } else {
+            throw new NotFoundException();
         }
-
-        throw new UserNotFoundException();
     }
 
     public void deleteUserById(int id) {

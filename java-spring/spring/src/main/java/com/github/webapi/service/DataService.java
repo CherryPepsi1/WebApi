@@ -1,5 +1,6 @@
 package com.github.webapi.service;
 
+import com.github.webapi.exception.DataException;
 import com.github.webapi.service.DataCallbackInterface;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class DataService {
                 System.getenv("DATABASE_PASSWORD")
             );
         } catch (SQLException e) {
-            System.out.println("Failed to open database connection: " + e.getMessage());
+            System.err.println("Failed to open database connection: " + e.getMessage());
             this.connection = null;
         }
 
@@ -46,13 +47,13 @@ public class DataService {
                 return true;
             }
         } catch (SQLException e) {
-            System.out.println("Failed to validate connection: " + e.getMessage());
+            System.err.println("Failed to validate connection: " + e.getMessage());
         }
 
         return false;
     }
 
-    public <T> List<T> select(String table, int count, Integer offset, String... columns) {
+    public <T> List<T> select(String table, int count, Integer offset, String[] columns) throws DataException {
         try {
             if (isValid()) {
                 StringBuilder sqlBuilder = new StringBuilder("SELECT ");
@@ -69,7 +70,7 @@ public class DataService {
                 sqlBuilder.append(" FROM " + table);
                 sqlBuilder.append(" LIMIT " + count);
                 if (offset != null) {
-                    sqlBuilder.append(" OFFSET " + offset);
+                    sqlBuilder.append(" OFFSET " + offset.intValue());
                 }
 
                 Statement statement = connection.createStatement();
@@ -78,14 +79,22 @@ public class DataService {
             }
 
         } catch (SQLException e) {
-            System.out.println("Failed to execute select query: " + e.getMessage());
+            System.err.println("Failed to execute select query: " + e.getMessage());
         }
 
-        return null;
+        throw new DataException();
     }
 
-    public <T> List<T> select(String table, int count, String... columns) {
+    public <T> List<T> select(String table, int count, int offset) throws DataException {
+        return select(table, count, offset, null);
+    }
+
+    public <T> List<T> select(String table, int count, String[] columns) throws DataException {
         return select(table, count, null, columns);
+    }
+
+    public <T> List<T> select(String table, int count) throws DataException {
+        return select(table, count, null, null);
     }
 
     @Override
@@ -93,7 +102,7 @@ public class DataService {
         try {
             this.connection.close();
         } catch (SQLException e) {
-            System.out.println("Failed to close database connection: " + e.getMessage());
+            System.err.println("Failed to close database connection: " + e.getMessage());
         } finally {
             super.finalize();
         }

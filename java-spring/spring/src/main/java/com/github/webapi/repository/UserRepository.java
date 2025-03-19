@@ -14,5 +14,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_AGE = "age";
+    public static final String[] COLUMNS_USERS = { COLUMN_ID, COLUMN_NAME, COLUMN_AGE };
 
 }
