@@ -1,0 +1,30 @@
+services:
+  postgres:
+    build: ./postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: de4ac6d26c0542c98ce978f7eb3b8aa7
+      POSTGRES_DB: webapi
+    ports:
+      - '5432:5432'
+    networks:
+      - 'node-network'
+  node:
+    build: ./nodejs
+    environment:
+      DATABASE_HOST: "postgres"
+      DATABASE_PORT: 5432
+      DATABASE_USER: "postgres"
+      DATABASE_PASSWORD: "de4ac6d26c0542c98ce978f7eb3b8aa7"
+      DATABASE_NAME: "webapi"
+    ports:
+      - '8083:8080'
+    depends_on:
+      - postgres
+    networks:
+      - 'node-network'
+  
+networks:
+  node-network:
+    driver: bridge

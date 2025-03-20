@@ -7,3 +7,7 @@ c-apache/apache/src/*.slo
 
 # Spring Boot
 java-spring/spring/target/
+
+# Node
+node-express/nodejs/node_modules/
+node-express/nodejs/package-lock.json
