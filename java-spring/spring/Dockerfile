@@ -1,4 +1,4 @@
-FROM sapmachine:21.0.6-jre-ubuntu-24.04
+FROM sapmachine:21.0.6-jre-alpine
 
 # Set working directory
 WORKDIR /usr/app

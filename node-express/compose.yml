@@ -13,11 +13,11 @@ services:
   node:
     build: ./nodejs
     environment:
-      DATABASE_HOST: "postgres"
+      DATABASE_HOST: postgres
       DATABASE_PORT: 5432
-      DATABASE_USER: "postgres"
-      DATABASE_PASSWORD: "de4ac6d26c0542c98ce978f7eb3b8aa7"
-      DATABASE_NAME: "webapi"
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: de4ac6d26c0542c98ce978f7eb3b8aa7
+      DATABASE_NAME: webapi
     ports:
       - '8083:8080'
     depends_on:
