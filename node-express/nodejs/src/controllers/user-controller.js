@@ -1,7 +1,6 @@
 const userService = require('../services/user-service');
 const successResponses = require('../models/success-responses');
 const errorResponses = require('../models/error-responses');
-const { DataError } = require('../errors/data-error');
 const { NotFoundError } = require('../errors/not-found-error');
 
 const errorHandler = (res, err) => {
