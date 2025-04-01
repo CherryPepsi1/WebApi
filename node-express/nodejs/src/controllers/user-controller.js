@@ -9,10 +9,8 @@ const errorHandler = (res, err) => {
     errorResponses.sendBadRequest(res, err.message);
   } else if (err instanceof NotFoundError) {
     errorResponses.sendNotFound(res);
-  } else if (err instanceof DataError) {
-    errorResponses.sendInternalServerError(res);
   } else {
-    console.error("Unexpected error: ", err);
+    console.error("Error: ", err);
     errorResponses.sendInternalServerError(res);
   }
 }

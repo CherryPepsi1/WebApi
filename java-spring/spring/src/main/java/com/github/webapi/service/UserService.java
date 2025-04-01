@@ -1,7 +1,6 @@
 package com.github.webapi.service;
 
 import com.github.webapi.entity.User;
-import com.github.webapi.exception.DataException;
 import com.github.webapi.exception.NotFoundException;
 import com.github.webapi.repository.UserRepository;
 import com.github.webapi.service.DataCallbackInterface;
@@ -25,6 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final DataService dataService;
+    private final DataCallback dataCallback;
 
     @Component
     public class DataCallback implements DataCallbackInterface {
@@ -55,13 +55,15 @@ public class UserService {
     @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.dataService = new DataService(new DataCallback());
+        this.dataService = new DataService();
+        this.dataCallback = new DataCallback();
     }
 
-    public List<User> getUsers(Integer page) throws DataException {
+    public List<User> getUsers(Integer page) throws Exception {
         if (page != null) {
             int offset = (page.intValue() - 1) * MAX_USERS;
             return dataService.select(
+                dataCallback,
                 UserRepository.TABLE_USERS,
                 MAX_USERS,
                 offset,
@@ -69,6 +71,7 @@ public class UserService {
             );
         } else {
             return dataService.select(
+                dataCallback,
                 UserRepository.TABLE_USERS,
                 MAX_USERS,
                 UserRepository.COLUMNS_USERS

@@ -1,7 +1,6 @@
 package com.github.webapi.controller;
 
 import com.github.webapi.entity.User;
-import com.github.webapi.exception.DataException;
 import com.github.webapi.exception.NotFoundException;
 import com.github.webapi.model.ErrorResponse;
 import com.github.webapi.model.UserRequest;
@@ -48,7 +47,8 @@ public class UserController {
         try {
             List<User> users = userService.getUsers(page);
             return ResponseEntity.ok(users);
-        } catch (DataException e) {
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
             return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -60,32 +60,48 @@ public class UserController {
             return ResponseEntity.ok(user);
         } catch (NotFoundException e) {
             return buildErrorResponse(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+            return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping
     public ResponseEntity<User> createUser(@Valid @RequestBody UserRequest request) {
-        User user = new User(request);
-        User newUser = userService.createUser(user);
-        URI uri = URI.create("/users/" + newUser.getId());
-        return ResponseEntity.created(uri).body(newUser);
+        try {
+            User user = new User(request);
+            User newUser = userService.createUser(user);
+            URI uri = URI.create("/users/" + newUser.getId());
+            return ResponseEntity.created(uri).body(newUser);
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+            return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable int id, @Valid @RequestBody UserRequest request) {
-        User user = new User(request);
         try {
+            User user = new User(request);
             User updatedUser = userService.updateUserById(id, user);
             return ResponseEntity.ok(updatedUser);
         } catch (NotFoundException e) {
             return buildErrorResponse(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+            return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteUser(@PathVariable int id) {
-        userService.deleteUserById(id);
-        return ResponseEntity.noContent().build();
+        try {
+            userService.deleteUserById(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+            return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }
