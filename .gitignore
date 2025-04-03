@@ -5,9 +5,14 @@ c-apache/apache/src/*.lo
 c-apache/apache/src/*.la
 c-apache/apache/src/*.slo
 
-# Spring Boot
+# Spring
 java-spring/spring/target/
 
 # Node
 javascript-node/node/node_modules/
 javascript-node/node/package-lock.json
+
+# .NET
+csharp-dotnet/dotnet/src/.vs/
+csharp-dotnet/dotnet/src/bin/
+csharp-dotnet/dotnet/src/obj/

@@ -1,0 +1,31 @@
+services:
+  mysql:
+    build: ./mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: de4ac6d26c0542c98ce978f7eb3b8aa7
+      MYSQL_DATABASE: webapi
+    ports:
+      - '3307:3306'
+    networks:
+      - 'csharp-network'
+  aspnet:
+    build: ./aspnet
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
+      DATABASE_HOST: mysql
+      DATABASE_PORT: 3306
+      DATABASE_USERNAME: root
+      DATABASE_PASSWORD: de4ac6d26c0542c98ce978f7eb3b8aa7
+      DATABASE_NAME: webapi
+    ports:
+      - '8084:8080'
+    depends_on:
+      - mysql
+    networks:
+      - 'csharp-network'
+
+networks:
+  csharp-network:
+    driver: bridge
