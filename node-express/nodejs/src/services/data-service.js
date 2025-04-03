@@ -10,6 +10,7 @@ const client = new Client({
 });
 
 const SEPARATOR = ", ";
+const PARAM_PREFIX = '$'
 
 const initialize = async () => {
   try {
@@ -42,11 +43,15 @@ const buildSelectClause = (columns) => {
   return str;
 }
 
-const buildWhereClause = (filter, i = 1) => {
+const buildWhereClause = (filters, i = 1) => {
+  if (filters == null || Object.keys(filters).length == 0) {
+    return "";
+  }
+
   var str = " WHERE ";
   let pairs = [];
-  Object.keys(filter).forEach(key => {
-    pairs.push(`${key} = $${i}`);
+  Object.keys(filters).forEach(key => {
+    pairs.push(`${key} = ${PARAM_PREFIX}${i}`);
     i++;
   });
   str += pairs.join(" AND ");
@@ -54,32 +59,42 @@ const buildWhereClause = (filter, i = 1) => {
   return str;
 }
 
-const buildValuesClause = (values) => {
+const buildValuesClause = (values, i = 1) => {
+  if (values == null || Object.keys(values).length == 0) {
+    return "";
+  }
+
   var str = " VALUES ";
-  let params = [];
-  let i = 1;
+  let pairs = [];
   Object.keys(values).forEach(key => {
-    params.push(`$${i}`);
+    pairs.push(`${PARAM_PREFIX}${i}`);
     i++;
   });
-  str += `(${params.join(SEPARATOR)})`;
+  str += `(${pairs.join(SEPARATOR)})`;
 
   return str;
 }
 
 const buildReturningClause = (columns) => {
+  if (columns == null || columns.length == 0) {
+    return "";
+  }
+
   var str = " RETURNING ";
   str += columns.join(SEPARATOR);
 
   return str;
 }
 
-const buildSetClause = (values) => {
+const buildSetClause = (values, i = 1) => {
+  if (values == null || Object.keys(values).length == 0) {
+    return "";
+  }
+
   var str = " SET ";
   let pairs = [];
-  let i = 1;
   Object.keys(values).forEach(key => {
-    pairs.push(`${key} = $${i}`);
+    pairs.push(`${key} = ${PARAM_PREFIX}${i}`);
     i++;
   });
   str += pairs.join(SEPARATOR);
@@ -87,20 +102,18 @@ const buildSetClause = (values) => {
   return str;
 }
 
-const querySelect = async (table, count, offset = null, columns = null, filter = null) => {
+const querySelect = async (table, count, offset = null, columns = null, filters = null) => {
   var sql = buildSelectClause(columns);
   sql += ` FROM ${table}`;
-  if (filter != null && Object.keys(filter).length > 0) {
-    sql += buildWhereClause(filter);
-  }
+  sql += buildWhereClause(filters);
   sql += ` LIMIT ${count}`;
   if (offset != null) {
     sql += ` OFFSET ${offset}`;
   }
 
   try {
-    const res = await client.query(sql, filter != null
-      ? Object.values(filter) : null);
+    const res = await client.query(sql, filters != null
+      ? Object.values(filters) : null);
     return res.rows;
   } catch (err) {
     console.error("Failed to execute select query: " + err);
@@ -108,8 +121,8 @@ const querySelect = async (table, count, offset = null, columns = null, filter =
   }
 }
 
-const querySelectFirst = async (table, columns = null, filter = null) => {
-  const rows = await querySelect(table, 1, null, columns, filter);
+const querySelectFirst = async (table, columns = null, filters = null) => {
+  const rows = await querySelect(table, 1, null, columns, filters);
   return rows.length > 0 ? rows[0] : null;
 }
 
@@ -120,9 +133,7 @@ const queryInsert = async (table, values, retColumns = null) => {
 
   var sql = `INSERT INTO ${table} (${Object.keys(values).join(SEPARATOR)})`;
   sql += buildValuesClause(values);
-  if (retColumns != null) {
-    sql += buildReturningClause(retColumns);
-  }
+  sql += buildReturningClause(retColumns);
 
   try {
     const res = await client.query(sql, Object.values(values));
@@ -137,23 +148,19 @@ const queryInsert = async (table, values, retColumns = null) => {
   }
 }
 
-const queryUpdate = async (table, values, filter = null, retColumns = null) => {
+const queryUpdate = async (table, values, filters = null, retColumns = null) => {
   if (values == null || Object.keys(values).length == 0) {
     throw new DataError("Values cannot be null or empty");
   }
 
   var sql = `UPDATE ${table}`;
   sql += buildSetClause(values);
-  if (filter != null && Object.keys(filter).length > 0) {
-    sql += buildWhereClause(filter, Object.keys(values).length + 1);
-  }
-  if (retColumns != null) {
-    sql += buildReturningClause(retColumns);
-  }
+  sql += buildWhereClause(filters, Object.keys(values).length + 1);
+  sql += buildReturningClause(retColumns);
 
   try {
-    const res = await client.query(sql, filter != null
-      ? Object.values(values).concat(Object.values(filter)) : Object.values(values));
+    const res = await client.query(sql, filters != null
+      ? Object.values(values).concat(Object.values(filters)) : Object.values(values));
     if (retColumns != null) {
       return res.rows.length > 0 ? res.rows[0] : null;
     } else {
@@ -165,15 +172,13 @@ const queryUpdate = async (table, values, filter = null, retColumns = null) => {
   }
 }
 
-const queryDelete = async (table, filter = null) => {
+const queryDelete = async (table, filters = null) => {
   var sql = `DELETE FROM ${table}`;
-  if (filter != null && Object.keys(filter).length > 0) {
-    sql += buildWhereClause(filter);
-  }
+  sql += buildWhereClause(filters);
 
   try {
-    const res = await client.query(sql, filter != null
-      ? Object.values(filter) : null);
+    const res = await client.query(sql, filters != null
+      ? Object.values(filters) : null);
     return res.rowCount;
   } catch (err) {
     console.error("Failed to execute delete query: " + err);

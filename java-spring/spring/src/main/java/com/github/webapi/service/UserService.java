@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,20 +34,15 @@ public class UserService {
         public DataCallback() {
         }
 
-        public List<User> parseResultSet(ResultSet resultSet) {
+        public List<User> parseResultSet(ResultSet resultSet) throws SQLException {
             List<User> users = new ArrayList<User>();
-            try {
-                while (resultSet.next()) {
-                    User user = new User(
-                        resultSet.getInt(UserRepository.COLUMN_ID),
-                        resultSet.getString(UserRepository.COLUMN_NAME),
-                        resultSet.getInt(UserRepository.COLUMN_AGE));
-                    users.add(user);
-                }
-            } catch (Exception e) {
-                System.err.println("Failed to parse result set: " + e.getMessage());
+            while (resultSet.next()) {
+                User user = new User(
+                    resultSet.getInt(UserRepository.COLUMN_ID),
+                    resultSet.getString(UserRepository.COLUMN_NAME),
+                    resultSet.getInt(UserRepository.COLUMN_AGE));
+                users.add(user);
             }
-
             return users;
         }
 
@@ -60,23 +56,13 @@ public class UserService {
     }
 
     public List<User> getUsers(Integer page) throws Exception {
-        if (page != null) {
-            int offset = (page.intValue() - 1) * MAX_USERS;
-            return dataService.select(
-                dataCallback,
-                UserRepository.TABLE_USERS,
-                MAX_USERS,
-                offset,
-                UserRepository.COLUMNS_USERS
-            );
-        } else {
-            return dataService.select(
-                dataCallback,
-                UserRepository.TABLE_USERS,
-                MAX_USERS,
-                UserRepository.COLUMNS_USERS
-            );
-        }
+        return dataService.querySelect(
+            dataCallback,
+            UserRepository.TABLE_USERS,
+            MAX_USERS,
+            page != null ? (page.intValue() - 1) * MAX_USERS : null,
+            UserRepository.COLUMNS_USERS
+        );
     }
 
     public User getUserById(int id) throws NotFoundException {

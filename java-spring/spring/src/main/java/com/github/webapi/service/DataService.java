@@ -32,7 +32,7 @@ public class DataService {
         }
     }
 
-    public <T> List<T> select(DataCallbackInterface callback, String table, int count, Integer offset, String[] columns) throws Exception {
+    public <T> List<T> querySelect(DataCallbackInterface callback, String table, int count, Integer offset, String[] columns) throws Exception {
         if (callback == null) {
             throw new IllegalArgumentException("Data callback cannot be null");
         } else if (connection == null) {
@@ -69,16 +69,16 @@ public class DataService {
         }
     }
 
-    public <T> List<T> select(DataCallbackInterface callback, String table, int count, int offset) throws Exception {
-        return select(callback, table, count, offset, null);
+    public <T> List<T> querySelect(DataCallbackInterface callback, String table, int count, Integer offset) throws Exception {
+        return querySelect(callback, table, count, offset, null);
     }
 
-    public <T> List<T> select(DataCallbackInterface callback, String table, int count, String[] columns) throws Exception {
-        return select(callback, table, count, null, columns);
+    public <T> List<T> querySelect(DataCallbackInterface callback, String table, int count, String[] columns) throws Exception {
+        return querySelect(callback, table, count, null, columns);
     }
 
-    public <T> List<T> select(DataCallbackInterface callback, String table, int count) throws Exception {
-        return select(callback, table, count, null, null);
+    public <T> List<T> querySelect(DataCallbackInterface callback, String table, int count) throws Exception {
+        return querySelect(callback, table, count, null, null);
     }
 
     @Override

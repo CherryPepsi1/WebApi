@@ -28,12 +28,12 @@ const getUser = async (id) => {
     throw new TypeError("Id must be an integer");
   }
 
-  var filter = {};
-  filter[dataConstants.COLUMN_ID] = idInt;
+  var filters = {};
+  filters[dataConstants.COLUMN_ID] = idInt;
   var user = await dataService.querySelectFirst(
     dataConstants.TABLE_USERS,
     dataConstants.COLUMNS_USERS,
-    filter
+    filters
   );
 
   if (user != null) {
@@ -85,12 +85,12 @@ const updateUser = async (id, user) => {
   var values = {};
   values[dataConstants.COLUMN_NAME] = user.name;
   values[dataConstants.COLUMN_AGE] = user.age;
-  var filter = {};
-  filter[dataConstants.COLUMN_ID] = id;
+  var filters = {};
+  filters[dataConstants.COLUMN_ID] = id;
   var user = await dataService.queryUpdate(
     dataConstants.TABLE_USERS,
     values,
-    filter,
+    filters,
     dataConstants.COLUMNS_USERS
   );
 
@@ -107,11 +107,11 @@ const deleteUser = async (id) => {
     throw new TypeError("Id must be an integer");
   }
 
-  var filter = {};
-  filter[dataConstants.COLUMN_ID] = idInt;
+  var filters = {};
+  filters[dataConstants.COLUMN_ID] = idInt;
   await dataService.queryDelete(
     dataConstants.TABLE_USERS,
-    filter
+    filters
   );
 }
 
