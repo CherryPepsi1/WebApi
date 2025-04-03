@@ -10,7 +10,7 @@ services:
     networks:
       - 'csharp-network'
   aspnet:
-    build: ./aspnet
+    build: ./dotnet
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_HTTP_PORTS: 8080
