@@ -1,7 +1,6 @@
 const dataService = require('./data-service');
 const dataConstants = require('../constants/data-constants');
 const { NotFoundError } = require('../errors/not-found-error');
-const { DataError } = require('../errors/data-error');
 
 const MAX_USERS = 10;
 
@@ -9,7 +8,7 @@ const getUsers = async (page) => {
   if (page != null) {
     let pageInt = parseInt(page);
     if (!Number.isInteger(pageInt) || pageInt <= 0) {
-      throw new TypeError("Page must be an integer greater than 0");
+      throw new TypeError('Page must be an integer greater than 0');
     }
     var offset = (pageInt - 1) * MAX_USERS;
   }
@@ -25,7 +24,7 @@ const getUsers = async (page) => {
 const getUser = async (id) => {
   var idInt = parseInt(id);
   if (!Number.isInteger(idInt)) {
-    throw new TypeError("Id must be an integer");
+    throw new TypeError('Id must be an integer');
   }
 
   var filters = {};
@@ -45,40 +44,34 @@ const getUser = async (id) => {
 
 const createUser = async (user) => {
   if (user?.name == null) {
-    throw new TypeError("Name cannot be null");
+    throw new TypeError('Name cannot be null');
   } else {
     var ageInt = parseInt(user?.age);
     if (!Number.isInteger(ageInt) || ageInt < 0) {
-      throw new TypeError("Age must be an integer greater than or equal to 0");
+      throw new TypeError('Age must be an integer greater than or equal to 0');
     }
   }
 
   var values = {};
   values[dataConstants.COLUMN_NAME] = user.name;
   values[dataConstants.COLUMN_AGE] = user.age;
-  var user = await dataService.queryInsert(
+  return await dataService.queryInsert(
     dataConstants.TABLE_USERS,
     values,
     dataConstants.COLUMNS_USERS
   );
-
-  if (user != null) {
-    return user;
-  } else {
-    throw new DataError("Insert user failed");
-  }
 }
 
 const updateUser = async (id, user) => {
   var idInt = parseInt(id);
   if (!Number.isInteger(idInt)) {
-    throw new TypeError("Id must be an integer");
+    throw new TypeError('Id must be an integer');
   } else if (user?.name == null) {
-    throw new TypeError("Name cannot be null");
+    throw new TypeError('Name cannot be null');
   } else {
     var ageInt = parseInt(user?.age);
     if (!Number.isInteger(ageInt) || ageInt < 0) {
-      throw new TypeError("Age must be an integer greater than or equal to 0");
+      throw new TypeError('Age must be an integer greater than or equal to 0');
     }
   }
 
@@ -87,15 +80,15 @@ const updateUser = async (id, user) => {
   values[dataConstants.COLUMN_AGE] = user.age;
   var filters = {};
   filters[dataConstants.COLUMN_ID] = id;
-  var user = await dataService.queryUpdate(
+  var updatedUser = await dataService.queryUpdate(
     dataConstants.TABLE_USERS,
     values,
     filters,
     dataConstants.COLUMNS_USERS
   );
 
-  if (user != null) {
-    return user;
+  if (updatedUser != null) {
+    return updatedUser;
   } else {
     throw new NotFoundError();
   }
@@ -104,7 +97,7 @@ const updateUser = async (id, user) => {
 const deleteUser = async (id) => {
   var idInt = parseInt(id);
   if (!Number.isInteger(idInt)) {
-    throw new TypeError("Id must be an integer");
+    throw new TypeError('Id must be an integer');
   }
 
   var filters = {};

@@ -46,12 +46,7 @@ public class DataService {
             if (columns == null || columns.length == 0) {
                 sqlBuilder.append("*");
             } else {
-                for (int i = 0; i < columns.length; i++) {
-                    if (i > 0) {
-                        sqlBuilder.append(", ");
-                    }
-                    sqlBuilder.append(columns[i]);
-                }
+                sqlBuilder.append(String.join(", ", columns));
             }
             sqlBuilder.append(" FROM " + table);
             sqlBuilder.append(" LIMIT " + count);

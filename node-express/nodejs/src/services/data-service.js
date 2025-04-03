@@ -9,15 +9,15 @@ const client = new Client({
   database: process.env.DATABASE_NAME,
 });
 
-const SEPARATOR = ", ";
+const SEPARATOR = ', ';
 const PARAM_PREFIX = '$'
 
 const initialize = async () => {
   try {
-    console.log("Opening database connection");
+    console.log('Opening database connection');
     await client.connect();
   } catch (err) {
-    console.error("Failed to open database connection: ", err);
+    console.error('Failed to open database connection: ', err);
   }
 }
 
@@ -27,15 +27,15 @@ const finalize = async () => {
     await client.end();
     return true;
   } catch (err) {
-    console.error("Failed to close database connection: ", err);
+    console.error('Failed to close database connection: ', err);
     return false;
   }
 }
 
 const buildSelectClause = (columns) => {
-  var str = "SELECT ";
+  var str = 'SELECT ';
   if (columns == null || columns.length == 0) {
-    str += "*";
+    str += '*';
   } else {
     str += columns.join(SEPARATOR);
   }
@@ -45,26 +45,26 @@ const buildSelectClause = (columns) => {
 
 const buildWhereClause = (filters, i = 1) => {
   if (filters == null || Object.keys(filters).length == 0) {
-    return "";
+    return '';
   }
 
-  var str = " WHERE ";
+  var str = ' WHERE ';
   let pairs = [];
   Object.keys(filters).forEach(key => {
     pairs.push(`${key} = ${PARAM_PREFIX}${i}`);
     i++;
   });
-  str += pairs.join(" AND ");
+  str += pairs.join(' AND ');
 
   return str;
 }
 
 const buildValuesClause = (values, i = 1) => {
   if (values == null || Object.keys(values).length == 0) {
-    return "";
+    return '';
   }
 
-  var str = " VALUES ";
+  var str = ' VALUES ';
   let pairs = [];
   Object.keys(values).forEach(key => {
     pairs.push(`${PARAM_PREFIX}${i}`);
@@ -77,10 +77,10 @@ const buildValuesClause = (values, i = 1) => {
 
 const buildReturningClause = (columns) => {
   if (columns == null || columns.length == 0) {
-    return "";
+    return '';
   }
 
-  var str = " RETURNING ";
+  var str = ' RETURNING ';
   str += columns.join(SEPARATOR);
 
   return str;
@@ -88,10 +88,10 @@ const buildReturningClause = (columns) => {
 
 const buildSetClause = (values, i = 1) => {
   if (values == null || Object.keys(values).length == 0) {
-    return "";
+    return '';
   }
 
-  var str = " SET ";
+  var str = ' SET ';
   let pairs = [];
   Object.keys(values).forEach(key => {
     pairs.push(`${key} = ${PARAM_PREFIX}${i}`);
@@ -116,8 +116,8 @@ const querySelect = async (table, count, offset = null, columns = null, filters 
       ? Object.values(filters) : null);
     return res.rows;
   } catch (err) {
-    console.error("Failed to execute select query: " + err);
-    throw new DataError("Database operation failed", { cause: err });
+    console.error('Failed to execute select query: ' + err);
+    throw new DataError('Database operation failed', { cause: err });
   }
 }
 
@@ -128,7 +128,7 @@ const querySelectFirst = async (table, columns = null, filters = null) => {
 
 const queryInsert = async (table, values, retColumns = null) => {
   if (values == null || Object.keys(values).length == 0) {
-    throw new DataError("Values cannot be null or empty");
+    throw new DataError('Values cannot be null or empty');
   }
 
   var sql = `INSERT INTO ${table} (${Object.keys(values).join(SEPARATOR)})`;
@@ -137,20 +137,22 @@ const queryInsert = async (table, values, retColumns = null) => {
 
   try {
     const res = await client.query(sql, Object.values(values));
-    if (retColumns != null) {
-      return res.rows.length > 0 ? res.rows[0] : null;
-    } else {
+    if (retColumns != null && res.rows.length > 0) {
+      return res.rows[0];
+    } else if (res.rowCount > 0) {
       return res.rowCount;
     }
   } catch (err) {
-    console.error("Failed to execute insert query: " + err);
-    throw new DataError("Database operation failed", { cause: err });
+    console.error('Failed to execute insert query: ' + err);
+    throw new DataError('Database operation failed', { cause: err });
   }
+
+  throw new DataError('Database operation failed');
 }
 
 const queryUpdate = async (table, values, filters = null, retColumns = null) => {
   if (values == null || Object.keys(values).length == 0) {
-    throw new DataError("Values cannot be null or empty");
+    throw new DataError('Values cannot be null or empty');
   }
 
   var sql = `UPDATE ${table}`;
@@ -167,8 +169,8 @@ const queryUpdate = async (table, values, filters = null, retColumns = null) => 
       return res.rowCount;
     }
   } catch (err) {
-    console.error("Failed to execute update query: " + err);
-    throw new DataError("Database operation failed", { cause: err });
+    console.error('Failed to execute update query: ' + err);
+    throw new DataError('Database operation failed', { cause: err });
   }
 }
 
@@ -181,8 +183,8 @@ const queryDelete = async (table, filters = null) => {
       ? Object.values(filters) : null);
     return res.rowCount;
   } catch (err) {
-    console.error("Failed to execute delete query: " + err);
-    throw new DataError("Database operation failed", { cause: err });
+    console.error('Failed to execute delete query: ' + err);
+    throw new DataError('Database operation failed', { cause: err });
   }
 }
 

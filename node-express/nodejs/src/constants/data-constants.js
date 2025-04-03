@@ -1,9 +1,9 @@
-const COLUMN_ID = "id";
-const COLUMN_NAME = "name";
-const COLUMN_AGE = "age";
+const COLUMN_ID = 'id';
+const COLUMN_NAME = 'name';
+const COLUMN_AGE = 'age';
 
 module.exports = {
-    TABLE_USERS: "users",
+    TABLE_USERS: 'users',
     COLUMN_ID,
     COLUMN_NAME,
     COLUMN_AGE,

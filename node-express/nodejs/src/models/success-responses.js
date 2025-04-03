@@ -5,8 +5,9 @@ const sendOk = (res, body) => {
     .json(body);
 }
 
-const sendCreated = (res, body) => {
+const sendCreated = (res, uri, body) => {
   res.status(StatusCodes.CREATED)
+    .header('Location', uri)
     .json(body);
 }
 

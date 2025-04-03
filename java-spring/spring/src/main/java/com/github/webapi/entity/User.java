@@ -1,6 +1,6 @@
 package com.github.webapi.entity;
 
-import com.github.webapi.model.UserRequest;
+import com.github.webapi.model.UpsertUserRequest;
 import com.github.webapi.repository.UserRepository;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -32,8 +32,7 @@ public class User {
         this.age = age;
     }
 
-    public User(UserRequest request) {
-        this.id = 0;
+    public User(UpsertUserRequest request) {
         this.name = request.getName();
         this.age = request.getAge();
     }

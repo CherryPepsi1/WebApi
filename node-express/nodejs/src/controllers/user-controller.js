@@ -9,7 +9,7 @@ const errorHandler = (res, err) => {
   } else if (err instanceof NotFoundError) {
     errorResponses.sendNotFound(res);
   } else {
-    console.error("Error: ", err);
+    console.error('Error: ', err);
     errorResponses.sendInternalServerError(res);
   }
 }
@@ -35,7 +35,8 @@ const getUser = async (req, res) => {
 const createUser = async (req, res) => {
   try {
     const user = await userService.createUser(req.body);
-    successResponses.sendCreated(res, user);
+    let uri = [req.baseUrl, user.id].join('/');
+    successResponses.sendCreated(res, uri, user);
   } catch (err) {
     errorHandler(res, err);
   }

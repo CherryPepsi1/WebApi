@@ -3,7 +3,7 @@ package com.github.webapi.controller;
 import com.github.webapi.entity.User;
 import com.github.webapi.exception.NotFoundException;
 import com.github.webapi.model.ErrorResponse;
-import com.github.webapi.model.UserRequest;
+import com.github.webapi.model.UpsertUserRequest;
 import com.github.webapi.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,12 +67,11 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody UserRequest request) {
+    public ResponseEntity<User> createUser(@Valid @RequestBody UpsertUserRequest request) {
         try {
-            User user = new User(request);
-            User newUser = userService.createUser(user);
-            URI uri = URI.create("/users/" + newUser.getId());
-            return ResponseEntity.created(uri).body(newUser);
+            User user = userService.createUser(new User(request));
+            URI uri = URI.create(String.join("/", this.request.getRequestURI(), Integer.toString(newUser.getId())));
+            return ResponseEntity.created(uri).body(user);
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
             return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -80,11 +79,10 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable int id, @Valid @RequestBody UserRequest request) {
+    public ResponseEntity<User> updateUser(@PathVariable int id, @Valid @RequestBody UpsertUserRequest request) {
         try {
-            User user = new User(request);
-            User updatedUser = userService.updateUserById(id, user);
-            return ResponseEntity.ok(updatedUser);
+            User user = userService.updateUserById(id, new User(request));
+            return ResponseEntity.ok(user);
         } catch (NotFoundException e) {
             return buildErrorResponse(HttpStatus.NOT_FOUND);
         } catch (Exception e) {

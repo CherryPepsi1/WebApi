@@ -5,8 +5,7 @@ const userRoutes = require('./routes/user-routes');
 const app = express();
 app.use(express.json());
 
-const pathPrefix = "/api";
-app.use(`${pathPrefix}/ping`, pingRoutes);
-app.use(`${pathPrefix}/users`, userRoutes);
+app.use('/api/ping', pingRoutes);
+app.use('/api/users', userRoutes);
 
 module.exports = app;
