@@ -9,5 +9,5 @@ c-apache/apache/src/*.slo
 java-spring/spring/target/
 
 # Node
-node-express/nodejs/node_modules/
-node-express/nodejs/package-lock.json
+javascript-node/node/node_modules/
+javascript-node/node/package-lock.json
